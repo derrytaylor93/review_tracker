@@ -1,0 +1,10 @@
+# Review Tracker sidecar files
+*.rt_tags.json
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
