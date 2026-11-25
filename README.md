@@ -1,20 +1,71 @@
 # Review Tracker
 
-A command-line tool for tracking line-number citations between a manuscript and a response-to-reviewers document. When you revise your manuscript in response to peer review comments, line numbers shift — this tool keeps your citations up to date automatically.
-
-Works on **Windows, Mac, and Linux** with LibreOffice or Microsoft Word (`.docx` files).
-
----
-
-## The problem
-
-When responding to peer reviewers, it's common to write things like:
+Keep the line numbers in your response to reviewers up to date while you keep revising the manuscript.
 
 > *"We revised the definition on **Lines 42–48** to address this comment."*
 
-But as you continue revising the manuscript in response to other comments, those line numbers change. Manually hunting down and updating every citation in your response document is tedious and error-prone.
+Every time you edit the manuscript, those numbers drift. Review Tracker remembers which passage each citation points to and refreshes all of them with one click.
 
-## How it works
+There are two versions:
+
+- **LibreOffice extension (recommended).** Buttons inside LibreOffice Writer: highlight text, click, done. Line numbers come from LibreOffice's own page layout, so they match the numbers in the margin exactly.
+- **Command-line script** (`review_tracker.py`, the original version, documented [further down](#command-line-version)). Line numbers are estimated, so they can be slightly off.
+
+---
+
+## LibreOffice extension
+
+### Install (once)
+
+1. Download [`libreoffice/ReviewTracker.oxt`](libreoffice/ReviewTracker.oxt) (click the file, then the download button).
+2. In LibreOffice, open **Tools → Extensions… → Add…**, pick `ReviewTracker.oxt` and accept. (Double-clicking the file also works.)
+3. Restart LibreOffice.
+
+You'll now see a **Review Tracker** menu next to Help, and a **Review Tracker** toolbar with four buttons. If the toolbar is hidden, switch it on in **View → Toolbars → Review Tracker**. Nothing else needs installing: LibreOffice already includes Python.
+
+Works with LibreOffice 7 or newer on Mac, Windows and Linux, with `.docx` and `.odt` files.
+
+### Use
+
+Turn on line numbers in the manuscript so you can see what the tool sees: **Tools → Line Numbering… → Show numbering**, interval 1.
+
+1. **Track Selection** (in the manuscript). Highlight the passage you changed and click **Track Selection**. Give it a short label, e.g. `R1.3 gaze definition`. Highlight exactly what you want to cite: a sentence that spans lines 45–51 will be cited as "Lines 45–51".
+2. **Insert Line Ref** (in the response document). Keep the manuscript open. Click where the line numbers should go, click **Insert Line Ref**, pick the passage and a format (`Lines 45–51`, `lines 45–51`, `L45–51` or `45–51`). The text is inserted like normal typing.
+3. **Update Line Numbers** (anywhere). After more edits to the manuscript, click this with both documents open. Every citation in every open document is refreshed. Save the response document afterwards.
+4. **Tracked Passages** (in the manuscript). See all tracked passages with their current lines, jump to one, rename it, or stop tracking it.
+
+You can cite the same passage as many times as you like. You can also edit around a citation freely; just don't retype the number itself, or the link to the passage is lost (insert it again instead).
+
+### Good to know
+
+- **Everything is stored in your documents.** A tracked passage is an invisible bookmark in the manuscript; a citation is an invisible bookmark around the number in the response document. There are no extra files to keep track of, and the documents can be emailed, renamed or moved.
+- **Safe to submit.** Bookmarks don't show up in print or PDF, and Word ignores them, so you can submit the files as they are. If you still want to remove them, use **Review Tracker → Remove Tracking from This Document…** (on a copy). The text stays exactly as it is.
+- **Tracked changes count the way you see them.** Line numbers follow what's on screen. If deleted text is shown (Edit → Track Changes → Show), its lines are counted, just like the numbers in the margin. To cite the clean version, hide tracked changes before clicking Update Line Numbers.
+- **Word gives slightly different numbers.** Word and LibreOffice lay out pages slightly differently, so the same file can have different line numbers in each. The extension matches LibreOffice. Make the PDF that reviewers see from LibreOffice, or check a few numbers if the journal converts your .docx itself.
+- **Edits inside a tracked passage are fine.** The bookmark stretches and shrinks with the text. If you delete a tracked passage entirely, its citations are left as they are and Update Line Numbers tells you how many it couldn't find; track the new text and insert the citation again. (With Track Changes recording, deleted text stays in the document as struck-through text until you accept the deletion, so it is still cited until then.)
+
+### For developers
+
+The extension is plain Python in [`libreoffice/extension/Scripts/python/ReviewTracker.py`](libreoffice/extension/Scripts/python/ReviewTracker.py). Rebuild the `.oxt` after changing it:
+
+```
+python3 libreoffice/build_oxt.py
+```
+
+End-to-end test against a running LibreOffice (uses your own manuscript and response document; checks the numbers against a PDF export of the margin numbers, so `pdftotext` is needed):
+
+```
+soffice --headless --norestore --accept="socket,host=localhost,port=2002;urp;" &
+python3 libreoffice/tests/test_core.py manuscript.docx response.docx /tmp/rt_test
+```
+
+---
+
+## Command-line version
+
+The original script. It still works, but the LibreOffice extension above is easier to use and more accurate.
+
+### How the command-line version works
 
 1. You **tag** a change in the manuscript by specifying the line number. The tool embeds an invisible bookmark in the `.docx` file so it can track that passage even as surrounding text shifts.
 2. You paste a **placeholder** (e.g. `{{line:RT_20260614_191649_513}}`) into your response document wherever you want to cite that line.
@@ -23,7 +74,7 @@ But as you continue revising the manuscript in response to other comments, those
 
 ---
 
-## Installation
+### Installation
 
 **Requirements:** Python 3.10+ and one library.
 
@@ -35,16 +86,16 @@ Download `review_tracker.py` and place it in the same folder as your manuscript 
 
 ---
 
-## Workflow
+### Workflow
 
-### Step 1 — Enable line numbers in your manuscript
+#### Step 1 — Enable line numbers in your manuscript
 
 Turn on continuous line numbering so you can read off the line numbers you want to tag.
 
 - **LibreOffice Writer:** Format → Line Numbers → check *Show Line Numbers*, set *Interval* to 1
 - **Microsoft Word:** Layout → Page Setup → Line Numbers → Continuous
 
-### Step 2 — Tag a change
+#### Step 2 — Tag a change
 
 Select the line number (or range) where you made a change, then run:
 
@@ -71,7 +122,7 @@ The tool prints an ID and the placeholder to copy:
 
 The tagged paragraphs are highlighted yellow in the manuscript so you can see at a glance what has been tagged.
 
-### Step 3 — Add placeholders to your response document
+#### Step 3 — Add placeholders to your response document
 
 Open your response-to-reviewers document and paste the placeholder wherever you want the line number to appear:
 
@@ -79,7 +130,7 @@ Open your response-to-reviewers document and paste the placeholder wherever you 
 
 You can use the same placeholder multiple times if you cite the same change in more than one place.
 
-### Step 4 — Sync after further edits
+#### Step 4 — Sync after further edits
 
 After making more changes to the manuscript, run:
 
@@ -93,7 +144,7 @@ Every placeholder in the response document is updated to the current line number
 
 The tracking code `{{line:...}}` stays embedded so you can keep re-syncing as you continue revising.
 
-### Step 5 — Render a clean copy for submission
+#### Step 5 — Render a clean copy for submission
 
 When you are ready to submit, produce a clean copy with all tracking codes removed:
 
@@ -109,7 +160,7 @@ Your working copy is left untouched.
 
 ---
 
-## All commands
+### All commands
 
 | Command | What it does |
 |---|---|
@@ -119,7 +170,7 @@ Your working copy is left untouched.
 | `untag MANUSCRIPT ID` | Remove a tag and its highlight |
 | `render RESPONSE [OUTPUT]` | Export a clean copy with tracking codes stripped |
 
-### `tag`
+#### `tag`
 
 ```
 python review_tracker.py tag manuscript.docx 42 "label"
@@ -128,7 +179,7 @@ python review_tracker.py tag manuscript.docx 42-48 "label"
 
 `LINE` can be a single line number (`42`) or a range (`42-48`). The label is for your own reference and appears in `list` output.
 
-### `sync`
+#### `sync`
 
 ```
 python review_tracker.py sync manuscript.docx response_to_reviewers.docx
@@ -136,7 +187,7 @@ python review_tracker.py sync manuscript.docx response_to_reviewers.docx
 
 Updates the response document in place. Safe to run as many times as you like.
 
-### `list`
+#### `list`
 
 ```
 python review_tracker.py list manuscript.docx
@@ -144,7 +195,7 @@ python review_tracker.py list manuscript.docx
 
 Shows all tags, their current line numbers, and a `*` next to any that have shifted since the last sync.
 
-### `untag`
+#### `untag`
 
 ```
 python review_tracker.py untag manuscript.docx RT_20260614_191649_513
@@ -152,7 +203,7 @@ python review_tracker.py untag manuscript.docx RT_20260614_191649_513
 
 Removes the bookmark and yellow highlight from the manuscript and deletes the tag from the sidecar file. Placeholders already in the response document are left unchanged (they will warn on the next sync).
 
-### `render`
+#### `render`
 
 ```
 python review_tracker.py render response_to_reviewers.docx
@@ -163,7 +214,7 @@ Strips all `{{line:...}}` codes, leaving only the human-readable line numbers. I
 
 ---
 
-## Files
+### Files
 
 The tool creates one sidecar file next to your manuscript:
 
@@ -179,7 +230,7 @@ If you share the manuscript with a co-author, send both files.
 
 ---
 
-## Limitations
+### Limitations
 
 - Line numbers are estimated from the document's page width, margins, and font size. They should match what LibreOffice/Word display in the margin for standard documents, but may drift slightly in documents with complex formatting (tables, footnotes, multiple columns, mixed fonts).
 - The tool works at the paragraph level — a bookmark is placed in the paragraph that contains your tagged line. If a tagged paragraph is deleted from the manuscript, the next sync will warn that the bookmark is missing.
@@ -187,7 +238,7 @@ If you share the manuscript with a co-author, send both files.
 
 ---
 
-## Tips
+### Tips
 
 - Run `sync` before `render` so the final document has the most current line numbers.
 - Use descriptive labels when tagging — they show up in `list` output and make it easier to identify which change is which.
