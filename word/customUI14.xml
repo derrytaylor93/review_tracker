@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<customUI xmlns="http://schemas.microsoft.com/office/2009/07/customui">
+  <ribbon>
+    <tabs>
+      <tab id="rtTab" label="Review Tracker">
+        <group id="rtManuscript" label="Manuscript">
+          <button id="rtTrack" label="Track Selection" size="large" imageMso="BookmarkInsert"
+                  screentip="Track Selection"
+                  supertip="Remember the selected passage so its line numbers can be cited in the response document."
+                  onAction="RT_OnTrack"/>
+          <button id="rtNext" label="Next Passage" size="large" imageMso="FindDialog"
+                  screentip="Next Passage" supertip="Jump to the next tracked passage."
+                  onAction="RT_OnNext"/>
+          <button id="rtStop" label="Stop Tracking" size="large" imageMso="Delete"
+                  screentip="Stop Tracking" supertip="Stop tracking the passage the cursor is in."
+                  onAction="RT_OnStop"/>
+        </group>
+        <group id="rtResponse" label="Response document">
+          <button id="rtInsert" label="Insert Line Ref" size="large" imageMso="CrossReferenceInsert"
+                  screentip="Insert Line Ref"
+                  supertip="Insert the line numbers of a tracked passage at the cursor."
+                  onAction="RT_OnInsert"/>
+          <button id="rtUpdate" label="Update Line Numbers" size="large" imageMso="Refresh"
+                  screentip="Update Line Numbers"
+                  supertip="Refresh every line reference in all open documents."
+                  onAction="RT_OnUpdate"/>
+        </group>
+        <group id="rtOther" label="Finish">
+          <button id="rtRemoveAll" label="Remove Tracking" size="large" imageMso="ReviewDeleteComment"
+                  screentip="Remove Tracking from This Document"
+                  supertip="Strip all Review Tracker bookmarks from this document, keeping the text."
+                  onAction="RT_OnRemoveAll"/>
+        </group>
+      </tab>
+    </tabs>
+  </ribbon>
+</customUI>
