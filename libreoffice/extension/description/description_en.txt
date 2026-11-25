@@ -1,0 +1,1 @@
+Track passages in your manuscript and keep the line numbers you cite in your response to reviewers up to date. Adds a Review Tracker menu and toolbar to Writer.
