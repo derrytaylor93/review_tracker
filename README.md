@@ -14,6 +14,33 @@ There are three versions:
 
 ---
 
+## Suggested workflow
+
+Line numbers drift in two directions. Your own edits move around, and so do the lines the reviewers pointed at: after a few changes, "line 120" in a reviewer's comment no longer points at the text they meant. Tracking both keeps everything findable.
+
+**1. Before you change anything, track what the reviewers pointed at.**
+Put the reviewer comments into your response document. Then go through the manuscript and track each passage a reviewer refers to, while the line numbers still match the version they read. First check a couple of numbers against the PDF the reviewers saw: Word and LibreOffice can lay out the same file slightly differently.
+
+**2. Link each comment to its passage, but keep the reviewer's own numbers.**
+Leave the reviewer's text exactly as written, so they recognise their comment, and insert a live reference next to it:
+
+> *Reviewer 1.3: "The definition of gaze on line 120 is unclear." [now Lines 134–136]*
+
+From then on you can always jump to what the reviewer meant, however much the manuscript changes.
+
+**3. Name labels so the two kinds are easy to tell apart.**
+For example `R1.3 reviewer` for the passage the reviewer pointed at, and `R1.3 change` for your edit. In the passage list, everything belonging to one comment then sits together.
+
+**4. Make your revisions, tracking each change as you go.**
+Highlight each revised passage, track it, and cite it in your reply:
+
+> *We have rewritten the definition (Lines 134–139).*
+
+**5. Update before you send.**
+Click Update Line Numbers with both documents open, check that nothing is reported missing, and save. If you deleted a passage a reviewer pointed at, it is reported as missing once the deletion is accepted. That's a useful reminder to say in your reply that the passage was removed.
+
+---
+
 ## LibreOffice extension
 
 ### Install (once)
