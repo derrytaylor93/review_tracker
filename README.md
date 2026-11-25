@@ -6,9 +6,10 @@ Keep the line numbers in your response to reviewers up to date while you keep re
 
 Every time you edit the manuscript, those numbers drift. Review Tracker remembers which passage each citation points to and refreshes all of them with one click.
 
-There are two versions:
+There are three versions:
 
-- **LibreOffice extension (recommended).** Buttons inside LibreOffice Writer: highlight text, click, done. Line numbers come from LibreOffice's own page layout, so they match the numbers in the margin exactly.
+- **LibreOffice extension.** Buttons inside LibreOffice Writer: highlight text, click, done. Line numbers come from LibreOffice's own page layout, so they match the numbers in the margin exactly.
+- **Word add-in** (new, see [Word version](#word-version)). The same idea as a *Review Tracker* tab in Word's ribbon. It stores everything the same way, so a manuscript tracked in LibreOffice also works in Word and vice versa.
 - **Command-line script** (`review_tracker.py`, the original version, documented [further down](#command-line-version)). Line numbers are estimated, so they can be slightly off.
 
 ---
@@ -58,6 +59,44 @@ End-to-end test against a running LibreOffice (uses your own manuscript and resp
 soffice --headless --norestore --accept="socket,host=localhost,port=2002;urp;" &
 python3 libreoffice/tests/test_core.py manuscript.docx response.docx /tmp/rt_test
 ```
+
+---
+
+## Word version
+
+> **New and not yet tested in Word itself.** It was built and checked without access to Word. If something doesn't work, please open an issue with what you clicked and what happened.
+
+### Install (once)
+
+1. Download [`word/ReviewTracker.dotm`](word/ReviewTracker.dotm) (click the file, then the download button).
+2. Put it in Word's **Startup** folder, so it loads every time Word starts:
+   - **Mac:** in Finder choose **Go → Go to Folder…** and paste
+     `~/Library/Group Containers/UBF8T346G9.Office/User Content.localized/Startup.localized/Word`
+     (on some versions the folder names have no `.localized`), then drag `ReviewTracker.dotm` into it.
+     To see which folder your Word uses: **Word → Preferences → File Locations → Startup**.
+   - **Windows:** press Win+R, paste `%appdata%\Microsoft\Word\STARTUP` and press Enter, then copy the file there.
+3. Quit Word completely and open it again. You'll see a **Review Tracker** tab in the ribbon.
+
+You don't open the `.dotm` file yourself; Word loads it in the background. If the tab appears but the buttons do nothing, check that macros from add-ins are allowed: **Word → Preferences → Security & Privacy → Macro Security** on Mac, or **File → Options → Trust Center** on Windows.
+
+### Use
+
+The buttons work like the LibreOffice version:
+
+1. **Track Selection** (manuscript). Highlight the passage and click it, then give it a label.
+2. **Insert Line Ref** (response document). Keep the manuscript open. A box lists the tracked passages with numbers; type the number you want. Tip: if you first click inside the passage in the manuscript, it is already filled in, so you only press Enter. The first time, you're also asked once how citations should look (`Lines 45–51`, `lines 45–51`, `L45–51` or `45–51`).
+3. **Update Line Numbers** (anywhere). Refreshes every citation in every open document, then save.
+4. **Next Passage** jumps to the next tracked passage (its label shows in the status bar). **Stop Tracking** forgets the passage the cursor is in. **Remove Tracking** strips all Review Tracker bookmarks from the document and keeps the text.
+
+Turn on continuous line numbers so you can compare: **Layout → Line Numbers → Continuous**. Word's line numbers don't count lines inside tables or text boxes, but Review Tracker does, so numbers after a table in the main text can be off. (PeerJ wants tables in separate files, so this rarely matters.)
+
+### If the ribbon tab doesn't appear
+
+You can use the macros without the template. In Word, open **Tools → Macro → Visual Basic Editor** (Mac) or press Alt+F11 (Windows). Select **Normal** on the left, choose **File → Import File…** and pick [`word/ReviewTracker.bas`](word/ReviewTracker.bas). Then run `TrackSelection`, `InsertLineReference`, `UpdateLineNumbers`, `NextTrackedPassage`, `StopTrackingHere` or `RemoveTrackingFromDocument` from **Tools → Macro → Macros…**, or add them as buttons to the toolbar.
+
+### For developers
+
+The macros are in [`word/ReviewTracker.bas`](word/ReviewTracker.bas) and the ribbon is [`word/customUI14.xml`](word/customUI14.xml). `python3 word/build_dotm.py` rebuilds `ReviewTracker.dotm` from them without needing Word. It writes the VBA project file (`vbaProject.bin`) directly, and Word compiles the macros from source the first time it opens the template.
 
 ---
 
